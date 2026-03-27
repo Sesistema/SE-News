@@ -100,6 +100,26 @@ npm run dev
 
 ## Deploy em producao na Hostinger
 
+### Opcao A (mais simples): um unico dominio (frontend + backend juntos)
+
+1. Gere o build do frontend localmente:
+   - `cd frontend`
+   - `npm install`
+   - `npm run build:prod`
+2. Suba o projeto inteiro (pasta raiz com `backend` e `frontend`) para a Hostinger.
+3. Crie uma Node App apontando para `SE-News-main/backend`.
+4. Configure na Node App:
+   - Install command: `npm install`
+   - Start command: `npm start`
+5. Variaveis de ambiente no backend:
+   - `SERVE_FRONTEND=true`
+   - `FRONTEND_DIST_DIR=../frontend/dist`
+   - `FRONTEND_URLS=https://senews.sesistemas.top,https://www.senews.sesistemas.top`
+   - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `UPLOAD_DIR`
+6. Teste:
+   - `https://senews.sesistemas.top` (frontend)
+   - `https://senews.sesistemas.top/api/health` (api)
+
 ### 1) Banco MySQL
 
 1. Abra o phpMyAdmin da Hostinger.

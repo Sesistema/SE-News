@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -11,6 +12,8 @@ const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
+const serveFrontend = ["1", "true", "yes"].includes(String(process.env.SERVE_FRONTEND || "").toLowerCase());
+const frontendDistDir = path.resolve(process.cwd(), process.env.FRONTEND_DIST_DIR || "../frontend/dist");
 const allowedOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
   .split(",")
   .map((item) => item.trim())
@@ -25,7 +28,7 @@ app.use(
       if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("Origem não permitida no CORS."));
+      return callback(new Error("Origem nao permitida no CORS."));
     }
   })
 );
@@ -45,6 +48,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/admin", adminRoutes);
 
+if (serveFrontend && fs.existsSync(frontendDistDir)) {
+  app.use(express.static(frontendDistDir));
+  app.get(/^\/(?!api|uploads).*/, (_, res) => {
+    res.sendFile(path.join(frontendDistDir, "index.html"));
+  });
+}
+
 app.use((err, req, res, next) => {
   if (err?.statusCode) {
     return res.status(err.statusCode).json({ message: err.message || "Erro na requisicao." });
@@ -53,16 +63,22 @@ app.use((err, req, res, next) => {
     return res.status(400).json({ message: err.message });
   }
   if (err?.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({ message: "A imagem deve ter no máximo 5MB." });
+    return res.status(400).json({ message: "A imagem deve ter no maximo 5MB." });
   }
   console.error(err);
   return res.status(500).json({ message: "Erro interno do servidor." });
 });
 
-app.use((_, res) => {
-  res.status(404).json({ message: "Rota não encontrada." });
+app.use((req, res) => {
+  if (serveFrontend && fs.existsSync(frontendDistDir) && !req.path.startsWith("/api")) {
+    return res.sendFile(path.join(frontendDistDir, "index.html"));
+  }
+  return res.status(404).json({ message: "Rota nao encontrada." });
 });
 
 app.listen(port, () => {
   console.log(`SeNews API executando na porta ${port}`);
+  if (serveFrontend) {
+    console.log(`Modo fullstack ativo. Frontend em: ${frontendDistDir}`);
+  }
 });
