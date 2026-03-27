@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -5,12 +6,21 @@ const baseItemClass = "text-sm font-semibold tracking-wide text-ink/70 hover:tex
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
+  const [logoSrc, setLogoSrc] = useState("/assets/logo-transparent.png");
 
   return (
     <header className="sticky top-0 z-20 border-b border-ink/5 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 md:px-6">
-        <Link to="/" className="font-display text-xl font-bold text-ink">
-          Wiki<span className="text-brand-600">ERP</span>
+        <Link to="/" className="flex items-center gap-3">
+          <img
+            src={logoSrc}
+            alt="SeNews"
+            className="h-10 w-auto object-contain"
+            onError={() => setLogoSrc("/assets/logo-white-bg.jpeg")}
+          />
+          <span className="font-display text-xl font-bold text-ink">
+            Se<span className="text-brand-600">News</span>
+          </span>
         </Link>
 
         <nav className="flex items-center gap-4 md:gap-7">

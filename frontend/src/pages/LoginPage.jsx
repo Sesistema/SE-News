@@ -28,7 +28,7 @@ export default function LoginPage() {
   return (
     <div className="mx-auto max-w-md rounded-3xl border border-white/70 bg-white p-6 shadow-soft md:p-8">
       <h1 className="font-display text-3xl font-bold text-ink">Acesso administrativo</h1>
-      <p className="mt-2 text-sm text-ink/70">Entre com seu usuário administrador para gerenciar postagens da Wiki ERP.</p>
+      <p className="mt-2 text-sm text-ink/70">Entre com seu usuario administrador para gerenciar postagens da SeNews.</p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
         <label className="block space-y-2">

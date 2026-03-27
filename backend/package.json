@@ -1,7 +1,7 @@
 {
-  "name": "wikierp-backend",
+  "name": "senews-backend",
   "version": "1.0.0",
-  "description": "API da Wiki corporativa ERP",
+  "description": "API do portal SeNews",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",

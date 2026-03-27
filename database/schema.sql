@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS wikierp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE wikierp;
+CREATE DATABASE IF NOT EXISTS senews CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE senews;
 
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,6 +10,15 @@ CREATE TABLE IF NOT EXISTS users (
   active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS projects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(80) NOT NULL,
+  slug VARCHAR(80) NOT NULL UNIQUE,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -24,12 +33,14 @@ CREATE TABLE IF NOT EXISTS posts (
   is_pinned TINYINT(1) NOT NULL DEFAULT 0,
   erp_version VARCHAR(32) NULL,
   erp_module VARCHAR(80) NULL,
+  project_id INT NULL,
   image_url VARCHAR(255) NULL,
   author_id INT NULL,
   published_at DATETIME NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_posts_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL
+  CONSTRAINT fk_posts_author FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_posts_project FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS change_logs (
@@ -47,3 +58,9 @@ CREATE INDEX idx_posts_status_date ON posts (status, published_at);
 CREATE INDEX idx_posts_category ON posts (category);
 CREATE INDEX idx_posts_module ON posts (erp_module);
 CREATE INDEX idx_posts_version ON posts (erp_version);
+CREATE INDEX idx_posts_project ON posts (project_id);
+
+INSERT IGNORE INTO projects (id, name, slug, active, sort_order) VALUES
+  (1, 'Sesiag7', 'sesiag7', 1, 1),
+  (2, 'Seicon7', 'seicon7', 1, 2),
+  (3, 'Sepdv', 'sepdv', 1, 3);

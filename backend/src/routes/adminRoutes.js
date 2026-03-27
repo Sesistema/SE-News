@@ -1,6 +1,8 @@
 const express = require("express");
 const {
   getAdminPosts,
+  getAdminProjects,
+  createProject,
   createPost,
   updatePost,
   deletePost,
@@ -15,6 +17,8 @@ const router = express.Router();
 router.use(requireAuth, requireAdmin);
 
 router.get("/posts", asyncHandler(getAdminPosts));
+router.get("/projects", asyncHandler(getAdminProjects));
+router.post("/projects", asyncHandler(createProject));
 router.post("/posts", upload.single("image"), asyncHandler(createPost));
 router.put("/posts/:id", upload.single("image"), asyncHandler(updatePost));
 router.delete("/posts/:id", asyncHandler(deletePost));

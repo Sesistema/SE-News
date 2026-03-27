@@ -1,6 +1,6 @@
-# Wiki ERP Corporativa
+# SeNews
 
-Aplicacao web para comunicados, novidades e atualizacoes de sistema ERP.
+Aplicacao web corporativa para comunicados, novidades e atualizacoes de sistema ERP.
 
 ## Stack
 
@@ -21,12 +21,14 @@ WikiNovo/
 
 - Area publica:
   - listagem de postagens
+  - abas por projeto (Sesiag7, Seicon7, Sepdv)
   - busca por palavra-chave
   - filtros por categoria, modulo e versao ERP
   - destaques e postagens fixadas
   - detalhe da postagem
 - Area admin:
   - login com JWT
+  - criacao de novas abas de projetos
   - criar, editar e excluir postagens
   - editor rico (WYSIWYG)
   - upload de imagem
@@ -37,6 +39,7 @@ WikiNovo/
 
 1. Crie o banco MySQL.
 2. Importe o arquivo `database/schema.sql`.
+3. Se ja tinha banco anterior sem projetos, rode tambem `database/migration_projects.sql`.
 
 ## Ambiente local
 
@@ -88,6 +91,8 @@ npm run dev
 - `GET /api/posts/:slugOrId`
 - `GET /api/posts/:slugOrId/private` (auth)
 - `GET /api/admin/posts` (admin)
+- `GET /api/admin/projects` (admin)
+- `POST /api/admin/projects` (admin)
 - `POST /api/admin/posts` (admin)
 - `PUT /api/admin/posts/:id` (admin)
 - `DELETE /api/admin/posts/:id` (admin)

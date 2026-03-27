@@ -3,7 +3,7 @@ import { createContext, useContext, useMemo, useState } from "react";
 const AuthContext = createContext(null);
 
 function getInitialUser() {
-  const raw = localStorage.getItem("wikierp_user");
+  const raw = localStorage.getItem("senews_user");
   if (!raw) return null;
   try {
     return JSON.parse(raw);
@@ -14,7 +14,7 @@ function getInitialUser() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(getInitialUser);
-  const [token, setToken] = useState(localStorage.getItem("wikierp_token"));
+  const [token, setToken] = useState(localStorage.getItem("senews_token"));
 
   const value = useMemo(
     () => ({
@@ -22,14 +22,14 @@ export function AuthProvider({ children }) {
       token,
       isAuthenticated: Boolean(token),
       login: (payload) => {
-        localStorage.setItem("wikierp_token", payload.token);
-        localStorage.setItem("wikierp_user", JSON.stringify(payload.user));
+        localStorage.setItem("senews_token", payload.token);
+        localStorage.setItem("senews_user", JSON.stringify(payload.user));
         setToken(payload.token);
         setUser(payload.user);
       },
       logout: () => {
-        localStorage.removeItem("wikierp_token");
-        localStorage.removeItem("wikierp_user");
+        localStorage.removeItem("senews_token");
+        localStorage.removeItem("senews_user");
         setToken(null);
         setUser(null);
       }

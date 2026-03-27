@@ -11,13 +11,15 @@ export default function AdminPostFormPage() {
   const navigate = useNavigate();
   const isEdit = useMemo(() => Boolean(id), [id]);
 
-  const [loading, setLoading] = useState(isEdit);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [projects, setProjects] = useState([]);
   const [form, setForm] = useState({
     title: "",
     summary: "",
     content: "",
+    project_id: "",
     category: categories[0],
     status: "publicado",
     is_featured: false,
@@ -28,29 +30,39 @@ export default function AdminPostFormPage() {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-    if (!isEdit) return;
     let mounted = true;
     async function load() {
       try {
-        const { data } = await api.get(`/posts/${id}/private`);
+        const [projectsRes, postRes] = await Promise.all([
+          api.get("/admin/projects"),
+          isEdit ? api.get(`/posts/${id}/private`) : Promise.resolve({ data: null })
+        ]);
+
         if (!mounted) return;
-        setForm({
-          title: data.title || "",
-          summary: data.summary || "",
-          content: data.content || "",
-          category: data.category || categories[0],
-          status: data.status || "publicado",
-          is_featured: Boolean(data.is_featured),
-          is_pinned: Boolean(data.is_pinned),
-          erp_version: data.erp_version || "",
-          erp_module: data.erp_module || ""
-        });
+        setProjects(projectsRes.data || []);
+
+        if (postRes.data) {
+          const data = postRes.data;
+          setForm({
+            title: data.title || "",
+            summary: data.summary || "",
+            content: data.content || "",
+            project_id: data.project_id ? String(data.project_id) : "",
+            category: data.category || categories[0],
+            status: data.status || "publicado",
+            is_featured: Boolean(data.is_featured),
+            is_pinned: Boolean(data.is_pinned),
+            erp_version: data.erp_version || "",
+            erp_module: data.erp_module || ""
+          });
+        }
       } catch (err) {
-        setError(err?.response?.data?.message || "Não foi possível carregar a postagem.");
+        setError(err?.response?.data?.message || "Nao foi possivel carregar os dados.");
       } finally {
         if (mounted) setLoading(false);
       }
     }
+
     load();
     return () => {
       mounted = false;
@@ -98,7 +110,7 @@ export default function AdminPostFormPage() {
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="block space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Título</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Titulo</span>
           <input
             required
             className="w-full rounded-xl border border-ink/15 px-4 py-2 text-sm outline-none ring-brand-500 focus:ring"
@@ -117,7 +129,23 @@ export default function AdminPostFormPage() {
           />
         </label>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="block space-y-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Projeto (aba)</span>
+            <select
+              className="w-full rounded-xl border border-ink/15 px-4 py-2 text-sm outline-none ring-brand-500 focus:ring"
+              value={form.project_id}
+              onChange={(e) => setForm((prev) => ({ ...prev, project_id: e.target.value }))}
+            >
+              <option value="">Sem projeto</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label className="block space-y-2">
             <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Categoria</span>
             <select
@@ -148,7 +176,7 @@ export default function AdminPostFormPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Versão ERP (opcional)</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Versao ERP (opcional)</span>
             <input
               placeholder="Ex: 3.8.1"
               className="w-full rounded-xl border border-ink/15 px-4 py-2 text-sm outline-none ring-brand-500 focus:ring"
@@ -158,13 +186,13 @@ export default function AdminPostFormPage() {
           </label>
 
           <label className="block space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Módulo ERP</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Modulo ERP</span>
             <select
               className="w-full rounded-xl border border-ink/15 px-4 py-2 text-sm outline-none ring-brand-500 focus:ring"
               value={form.erp_module}
               onChange={(e) => setForm((prev) => ({ ...prev, erp_module: e.target.value }))}
             >
-              <option value="">Selecione um módulo</option>
+              <option value="">Selecione um modulo</option>
               {modules.map((module) => (
                 <option key={module} value={module}>
                   {module}
@@ -175,7 +203,7 @@ export default function AdminPostFormPage() {
         </div>
 
         <label className="block space-y-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Conteúdo (editor rico)</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-ink/70">Conteudo (editor rico)</span>
           <ReactQuill theme="snow" value={form.content} onChange={(value) => setForm((prev) => ({ ...prev, content: value }))} />
         </label>
 

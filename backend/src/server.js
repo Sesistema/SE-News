@@ -38,7 +38,7 @@ const uploadDir = path.resolve(process.cwd(), process.env.UPLOAD_DIR || "uploads
 app.use("/uploads", express.static(uploadDir));
 
 app.get("/api/health", (_, res) => {
-  res.json({ status: "ok", app: "WikiERP API" });
+  res.json({ status: "ok", app: "SeNews API" });
 });
 
 app.use("/api/auth", authRoutes);
@@ -46,6 +46,9 @@ app.use("/api/posts", postRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use((err, req, res, next) => {
+  if (err?.statusCode) {
+    return res.status(err.statusCode).json({ message: err.message || "Erro na requisicao." });
+  }
   if (err?.message?.includes("Formato de imagem")) {
     return res.status(400).json({ message: err.message });
   }
@@ -61,5 +64,5 @@ app.use((_, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`WikiERP API executando na porta ${port}`);
+  console.log(`SeNews API executando na porta ${port}`);
 });

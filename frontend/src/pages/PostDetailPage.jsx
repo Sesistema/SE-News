@@ -47,6 +47,7 @@ export default function PostDetailPage() {
         Voltar para início
       </Link>
       <div className="mb-3 flex flex-wrap gap-2 text-xs font-bold uppercase tracking-wider">
+        {post.project_name ? <span className="rounded bg-brand-100 px-2 py-1 text-brand-700">{post.project_name}</span> : null}
         <span className="rounded bg-brand-100 px-2 py-1 text-brand-800">{post.category}</span>
         {post.erp_version ? <span className="rounded bg-ink/5 px-2 py-1 text-ink/70">Versão {post.erp_version}</span> : null}
         {post.erp_module ? <span className="rounded bg-ink/5 px-2 py-1 text-ink/70">{post.erp_module}</span> : null}

@@ -5,8 +5,8 @@ import PostCard from "../components/PostCard";
 export default function HomePage() {
   const [posts, setPosts] = useState([]);
   const [highlights, setHighlights] = useState([]);
-  const [meta, setMeta] = useState({ categories: [], modules: [], versions: [] });
-  const [filters, setFilters] = useState({ q: "", category: "", module: "", version: "" });
+  const [meta, setMeta] = useState({ categories: [], modules: [], versions: [], projects: [] });
+  const [filters, setFilters] = useState({ q: "", category: "", module: "", version: "", project: "" });
   const [loading, setLoading] = useState(true);
 
   const query = useMemo(() => {
@@ -70,6 +70,33 @@ export default function HomePage() {
           ) : (
             <p className="mt-3 text-sm text-white/80">Nenhum destaque cadastrado até o momento.</p>
           )}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/70 bg-white p-4 shadow-soft">
+        <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-ink/60">Projetos</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setFilters((prev) => ({ ...prev, project: "" }))}
+            className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              !filters.project ? "bg-brand-700 text-white" : "bg-ink/5 text-ink/70 hover:bg-ink/10"
+            }`}
+          >
+            Todos
+          </button>
+          {meta.projects.map((project) => (
+            <button
+              key={project.id}
+              type="button"
+              onClick={() => setFilters((prev) => ({ ...prev, project: String(project.id) }))}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                filters.project === String(project.id) ? "bg-brand-700 text-white" : "bg-ink/5 text-ink/70 hover:bg-ink/10"
+              }`}
+            >
+              {project.name}
+            </button>
+          ))}
         </div>
       </div>
 
