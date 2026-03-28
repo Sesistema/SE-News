@@ -91,7 +91,9 @@ export default function AdminPostFormPage() {
       }
       navigate("/admin");
     } catch (err) {
-      setError(err?.response?.data?.message || "Falha ao salvar postagem.");
+      const message = err?.response?.data?.message || "Falha ao salvar postagem.";
+      const details = err?.response?.data?.details;
+      setError(details ? `${message} (${details})` : message);
     } finally {
       setSaving(false);
     }

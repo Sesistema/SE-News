@@ -237,6 +237,7 @@ async function createPost(req, res) {
   const image_url = req.file ? `/uploads/${req.file.filename}` : null;
   const normalizedStatus = normalizeStatus(status);
   const parsedProjectId = await resolveProjectId(project_id);
+  const publishedAt = normalizedStatus === "publicado" ? new Date() : null;
 
   const [result] = await pool.execute(
     `
@@ -245,8 +246,7 @@ async function createPost(req, res) {
       erp_version, erp_module, project_id, image_url, author_id, published_at
     ) VALUES (
       :title, :slug, :summary, :content, :category, :status, :is_featured, :is_pinned,
-      :erp_version, :erp_module, :project_id, :image_url, :author_id,
-      CASE WHEN :status = 'publicado' THEN NOW() ELSE NULL END
+      :erp_version, :erp_module, :project_id, :image_url, :author_id, :published_at
     )
   `,
     {
@@ -262,7 +262,8 @@ async function createPost(req, res) {
       erp_module,
       project_id: parsedProjectId,
       image_url,
-      author_id: req.user.id
+      author_id: req.user.id,
+      published_at: publishedAt
     }
   );
 
@@ -297,7 +298,7 @@ async function updatePost(req, res) {
     return res.status(400).json({ message: "Titulo, conteudo e categoria sao obrigatorios." });
   }
 
-  const [existingRows] = await pool.execute("SELECT id FROM posts WHERE id = :id LIMIT 1", { id: Number(id) });
+  const [existingRows] = await pool.execute("SELECT id, published_at FROM posts WHERE id = :id LIMIT 1", { id: Number(id) });
   if (!existingRows[0]) {
     return res.status(404).json({ message: "Postagem nao encontrada." });
   }
@@ -305,6 +306,8 @@ async function updatePost(req, res) {
   const imageUpdate = req.file ? ", image_url = :image_url" : "";
   const normalizedStatus = normalizeStatus(status);
   const parsedProjectId = await resolveProjectId(project_id);
+  const currentPublishedAt = existingRows[0].published_at || null;
+  const nextPublishedAt = normalizedStatus === "publicado" ? currentPublishedAt || new Date() : null;
 
   await pool.execute(
     `
@@ -321,11 +324,7 @@ async function updatePost(req, res) {
       erp_module = :erp_module,
       project_id = :project_id,
       slug = :slug,
-      published_at = CASE
-        WHEN :status = 'publicado' AND published_at IS NULL THEN NOW()
-        WHEN :status = 'rascunho' THEN NULL
-        ELSE published_at
-      END
+      published_at = :published_at
       ${imageUpdate}
     WHERE id = :id
   `,
@@ -342,6 +341,7 @@ async function updatePost(req, res) {
       erp_module,
       project_id: parsedProjectId,
       slug: `${slugify(title)}-${id}`,
+      published_at: nextPublishedAt,
       image_url: req.file ? `/uploads/${req.file.filename}` : undefined
     }
   );

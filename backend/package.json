@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "build:frontend": "npm --prefix ../frontend run build:prod",
+    "build:frontend": "echo \"Skipping frontend build on server (using prebuilt dist).\"",
     "seed:admin": "node scripts/seedAdmin.js"
   },
   "dependencies": {

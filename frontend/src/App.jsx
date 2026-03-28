@@ -9,9 +9,9 @@ import AdminPostFormPage from "./pages/AdminPostFormPage";
 
 export default function App() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen text-ink">
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6 md:py-10">
+      <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/post/:slugOrId" element={<PostDetailPage />} />

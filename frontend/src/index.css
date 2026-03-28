@@ -7,19 +7,24 @@
 
 :root {
   color: #17212f;
-  background: #f4f8ff;
+  background: #e9eef7;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(1200px 480px at 10% -10%, rgba(53, 114, 245, 0.18), transparent 60%),
-    radial-gradient(900px 360px at 95% -10%, rgba(31, 72, 175, 0.14), transparent 60%),
-    #f4f8ff;
+    radial-gradient(920px 420px at -10% -10%, rgba(37, 89, 216, 0.22), transparent 70%),
+    radial-gradient(980px 460px at 120% -20%, rgba(32, 56, 105, 0.18), transparent 70%),
+    linear-gradient(180deg, #edf2fa 0%, #e4eaf4 100%);
+  font-feature-settings: "liga" 1, "calt" 1;
 }
 
 .ql-editor {
   min-height: 220px;
   font-family: Manrope, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
 }
